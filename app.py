@@ -12,6 +12,7 @@ from models import (
 )
 import pandas as pd
 import io
+import glob
 from datetime import datetime
 from pathlib import Path
 import config
@@ -221,8 +222,15 @@ def create_product(product: ProductCreate):
 def import_all(file_name: str):
     csv_path = config.DATA_FOLDER / file_name
 
-    if not csv_path.exists():
-        return {"message": "CSV file not found."}
+    if "*" in file_name:
+        # Path.exists() can't check a wildcard pattern literally, so use
+        # glob to see whether it matches at least one real file.
+        matches = glob.glob(str(csv_path))
+        if not matches:
+            return {"message": "CSV file not found."}
+    else:
+        if not csv_path.exists():
+            return {"message": "CSV file not found."}
 
     d = Data()
     d.run(str(csv_path), str(config.DATABASE))
