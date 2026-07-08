@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from database import get_connection, init_db
 from fastapi import HTTPException
+from fastapi.responses import StreamingResponse
 from Datas import Data
 from models import (
     Product,
@@ -10,6 +11,7 @@ from models import (
     ImportRequest
 )
 import pandas as pd
+import io
 from datetime import datetime
 from pathlib import Path
 import config
@@ -44,17 +46,41 @@ def get_shipments(limit: int = 5):
 
     return shipments
 
-@app.get("/export")
-def export_shipments():
+def _stream_csv(df: pd.DataFrame, filename_prefix: str) -> StreamingResponse:
+    """Shared helper: turn a DataFrame into a downloadable CSV response."""
+    buffer = io.StringIO()
+    df.to_csv(buffer, index=False)
+    buffer.seek(0)
 
+    filename = datetime.now().strftime(f"{filename_prefix}_%Y%m%d_%H%M%S.csv")
+
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+@app.get("/export/shipments")
+def export_shipments():
     conn = get_connection()
     df = pd.read_sql("SELECT * FROM shipment", conn)
     conn.close()
 
-    filename = config.EXPORT_FOLDER / datetime.now().strftime("shipments_%Y%m%d_%H%M%S.csv")
-    df.to_csv(filename, index=False)
+    return _stream_csv(df, "shipments")
 
-    return {"message": "CSV exported successfully.", "location": str(filename)}
+@app.get("/export/products")
+def export_products():
+    conn = get_connection()
+    df = pd.read_sql("SELECT * FROM product", conn)
+    conn.close()
+
+    return _stream_csv(df, "products")
+
+@app.get("/export")
+def export_shipments_alias():
+    # Kept for backwards compatibility with anything already linking to
+    # the old /export path; behaves the same as /export/shipments.
+    return export_shipments()
 
 @app.get(
     "/shipments/{index}",
