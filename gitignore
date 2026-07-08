@@ -1,0 +1,41 @@
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+shipment_database.db
+tests/test_database.db
+
+# Data / exports generated at runtime
+data/
+exports/
+tests/exports/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment variables
+.env
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
