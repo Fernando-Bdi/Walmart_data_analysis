@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from database import get_connection
+from database import get_connection, init_db
 from fastapi import HTTPException
 from Datas import Data
 from models import (
@@ -15,6 +15,13 @@ from pathlib import Path
 import config
 
 app= FastAPI()
+
+@app.on_event("startup")
+def on_startup():
+    # Ensure product/shipment tables exist, whether the DB file is fresh,
+    # empty, or already populated. Runs every time the app boots (including
+    # on Render), not just under pytest.
+    init_db()
 
 @app.get("/")
 def home():
