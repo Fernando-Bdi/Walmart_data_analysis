@@ -40,5 +40,5 @@ def test_invalid_quantity(client):
             "destination":"Store"
         }
     )
-
+    # Check that the response status code is 422 (Unprocessable Entity) for invalid quantity
     assert response.status_code == 422
