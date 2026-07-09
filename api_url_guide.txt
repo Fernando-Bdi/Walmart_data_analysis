@@ -1,0 +1,91 @@
+SHIPMENT API - HOW TO CALL EACH ENDPOINT
+==========================================
+
+Base URL (replace with your actual Render URL):
+https://walmart-data-analysis-ple0.onrender.com
+
+For local testing, replace the base URL with:
+http://127.0.0.1:8000
+
+
+------------------------------------------
+GET ENDPOINTS - paste these directly into your browser address bar
+------------------------------------------
+
+1) Home / health check
+   https://walmart-data-analysis-ple0.onrender.com/
+
+2) List shipments (default: 5 results)
+   https://walmart-data-analysis-ple0.onrender.com/shipments
+
+   List shipments with a custom limit (e.g. 50 results):
+   https://walmart-data-analysis-ple0.onrender.com/shipments?limit=50
+
+3) Get a single shipment by ID (replace 1 with the actual ID)
+   https://walmart-data-analysis-ple0.onrender.com/shipments/1
+
+4) List all products
+   https://walmart-data-analysis-ple0.onrender.com/products
+
+5) Export shipments as a downloadable CSV
+   https://walmart-data-analysis-ple0.onrender.com/export/shipments
+
+6) Export products as a downloadable CSV
+   https://walmart-data-analysis-ple0.onrender.com/export/products
+
+7) (Alias, same as #5, kept for backwards compatibility)
+   https://walmart-data-analysis-ple0.onrender.com/export
+
+
+------------------------------------------
+POST ENDPOINTS - use the Swagger docs UI instead of the address bar
+------------------------------------------
+
+Browsers can't send POST requests just by visiting a URL, so use the
+interactive docs page FastAPI generates automatically:
+
+   https://walmart-data-analysis-ple0.onrender.com/docs
+
+Steps:
+   1. Open the /docs URL above in your browser.
+   2. Find the endpoint you want in the list (grouped by path).
+   3. Click on it to expand, then click "Try it out".
+   4. Fill in the required fields (shown as a JSON body or query params).
+   5. Click "Execute".
+   6. Scroll down to see the response body and status code.
+
+POST endpoints available in this API:
+
+   POST /products
+     Body (JSON):
+       { "name": "Laptop" }
+
+   POST /shipments
+     Body (JSON):
+       {
+         "product_id": 1,
+         "quantity": 50,
+         "origin": "Warehouse A",
+         "destination": "Store B"
+       }
+
+   POST /import
+     Query parameter (not a JSON body):
+       file_name = shipping_data_0.csv
+     Or, to import all 3 CSVs at once (multi-file merge):
+       file_name = shipping_data_*.csv
+
+
+------------------------------------------
+QUICK REFERENCE
+------------------------------------------
+
+GET    /                    -> browser URL directly
+GET    /shipments            -> browser URL directly (supports ?limit=)
+GET    /shipments/{id}       -> browser URL directly
+GET    /products             -> browser URL directly
+GET    /export/shipments     -> browser URL directly (triggers download)
+GET    /export/products      -> browser URL directly (triggers download)
+POST   /products             -> use /docs
+POST   /shipments            -> use /docs
+POST   /import                -> use /docs
