@@ -10,6 +10,6 @@ DATABASE = BASE_DIR / "shipment_database.db"
 DATA_FOLDER = BASE_DIR / "data" / "source"
 EXPORT_FOLDER = BASE_DIR / "exports"
 
-# Create folders automatically
+# Create folders if they don't exist
 DATA_FOLDER.mkdir(parents=True, exist_ok=True)
 EXPORT_FOLDER.mkdir(parents=True, exist_ok=True)
