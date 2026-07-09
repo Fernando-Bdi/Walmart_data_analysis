@@ -22,8 +22,7 @@ app= FastAPI()
 @app.on_event("startup")
 def on_startup():
     # Ensure product/shipment tables exist, whether the DB file is fresh,
-    # empty, or already populated. Runs every time the app boots (including
-    # on Render), not just under pytest.
+    # empty, or already populated. Runs every time the app boots
     init_db()
 
 @app.get("/")
@@ -77,12 +76,6 @@ def export_products():
 
     return _stream_csv(df, "products")
 
-@app.get("/export")
-def export_shipments_alias():
-    # Kept for backwards compatibility with anything already linking to
-    # the old /export path; behaves the same as /export/shipments.
-    return export_shipments()
-
 @app.get(
     "/shipments/{index}",
     response_model=Shipment
@@ -127,7 +120,7 @@ def create_shipment(shipment: ShipmentCreate):
         conn.close()
         raise HTTPException(
             status_code=404,
-            detail="Product not found."
+            detail="Product not found. Insert it into the database first."
         )
 
     cursor = conn.execute(
@@ -160,12 +153,12 @@ def create_shipment(shipment: ShipmentCreate):
     "/products",
     response_model=list[Product]
 )
-def get_products():
+def get_products(limit: int = 5):
 
     conn = get_connection()
 
     cursor = conn.execute(
-        "SELECT * FROM product"
+        "SELECT * FROM product LIMIT ?", (limit,)
     )
 
     products = [dict(row) for row in cursor.fetchall()]
@@ -223,7 +216,7 @@ def import_all(file_name: str):
     csv_path = config.DATA_FOLDER / file_name
 
     if "*" in file_name:
-        # Path.exists() can't check a wildcard pattern literally, so use
+        # Path.exists() can't check a wildcard pattern literally, so I used
         # glob to see whether it matches at least one real file.
         matches = glob.glob(str(csv_path))
         if not matches:
