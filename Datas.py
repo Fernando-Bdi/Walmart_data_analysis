@@ -12,7 +12,6 @@ from config import (
 class Data:
     """
     Loads shipping_data_0/1/2.csv into the shipment_database.db SQLite database.
-
     Spreadsheet 0 is self-contained (one row per shipment).
     Spreadsheets 1 and 2 are split: 1 has one row per product per shipment
     (so quantity = number of rows per shipment+product), 2 has the
@@ -59,8 +58,7 @@ class Data:
 
     def read_csv_files(self, csv_path):
         """Read every csv matching csv_path into a list of DataFrames, in
-        filename order (0, 1, 2...) rather than whatever order glob happens
-        to return."""
+        filename order (0, 1, 2...)"""
 
         self.csv_path = csv_path
 
@@ -137,7 +135,7 @@ class Data:
         # Spreadsheet 0 uses different column names for the same concepts;
         # align it to the same shape (origin, destination, product, quantity)
         # before concatenating. on_time / driver_identifier aren't part of the
-        # shipment table schema, so they're dropped rather than carried through.
+        # shipment table schema, so they're dropped. A better option would be to keep them
         df_0 = self._dfs[0].rename(columns={
             "origin_warehouse": "origin",
             "destination_store": "destination",
