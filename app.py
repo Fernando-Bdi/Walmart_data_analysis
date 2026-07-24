@@ -29,7 +29,7 @@ def on_startup():
 def home():
     return {
         "message": "Welcome to my Shipment API",
-        "docs": "add \"/docs\" to the current URL",
+        "docs": "add /docs to the current URL to see the app workflow",
         "source_and_guide": "https://github.com/Fernando-Bdi/Walmart_data_analysis/blob/main/api_url_guide.txt"
     }
 @app.get(
